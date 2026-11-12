@@ -30,22 +30,30 @@ private static final String ISSUE = "AllureHomeWork";
         step("Открываем главную страницу", () -> {
                     open("https://github.com");
                 });
-
-        step("Ищем репозиторий " + REPOSITORY,-> {
+        step("Ищем репозиторий " + REPOSITORY, () -> {
         $("button[aria-label^='Search']").click();
         $("input[placeholder^='Search']").setValue(REPOSITORY).pressEnter();
         });
-
         step("Кликаем по ссылке репозитория " + REPOSITORY, () -> {
-            $$("a").findBy(text(ISSUE)).shouldBe(visible).click();
+            $$("a").findBy(text("HomeWorkAllureReports")).shouldBe(visible).click();
         });
-
         step("Открываем таб Issues", () -> {
             $$("a").findBy(text("Issues")).shouldBe(visible).click();
         });
-
         step("Проверяем наличие Issue с названием " + ISSUE, () -> {
         $("body").shouldHave(text(ISSUE));
          });
+    }
+
+    @Test
+    void testAnnotatedStep() {
+        SelenideLogger.addListener("allure", new AllureSelenide());
+        WebSteps steps = new WebSteps();
+
+        steps.openMainPage();
+        steps.searchForRepository(REPOSITORY);
+        steps.clickOnRepositoryLink(REPOSITORY);
+        steps.openIssuesTab();
+        steps.shouldSeeIssueName(ISSUE);
     }
 }
