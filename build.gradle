@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '2.11.2' // Обновили плагин Allure
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+allure {
+    report {
+        version.set("2.24.0")
+    }
+    adapter {
+        aspectjWeaver.set(true)
+        frameworks {
+            junit5 {
+                adapterVersion.set("2.24.0")
+            }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // JUnit 5
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+
+    // Selenide (обновляем до актуальной версии!)
+    testImplementation 'com.codeborne:selenide:7.4.0'
+
+    // Allure Selenide
+    testImplementation 'io.qameta.allure:allure-selenide:2.24.0'
+
+    // Логирование
+    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+}
+
+test {
+    useJUnitPlatform()
+    systemProperties(System.getProperties())
+}
