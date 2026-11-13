@@ -15,16 +15,18 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # 3. Запускаем Selenoid (добавили версию браузера, чтобы избежать сбоев)
-      - uses: Xotabu4/selenoid-github-action@v2
-        with:
-          browsers: 'chrome'
-          # Явно указываем версию,чтобы экшен не пытался скачать "последнюю", что часто ломается
-          chrome-version: '127.0'
+      # 3. Устанавливаем браузер Chrome
+      - uses: browser-actions/setup-chrome@v1
 
-      # 4. Даем права на запуск gradlew (ЭТОГО НЕ ХВАТАЛО)
+      # 4. Устанавливаем системные библиотеки, необходимые для работы Chrome в Linux
+      - name: Install Chrome dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgbm1 libxss1 libnss3 libasound2
+
+      # 5. Даем права на запуск скрипта gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 5. Запускаем тесты
-      - run: ./gradlew clean test -Dselenide.remote=http://localhost:4444/wd/hub
+      # 6. Запускаем тесты (без флага -Dselenide.remote, чтобы использовался локальный браузер)
+      - run: ./gradlew clean test
