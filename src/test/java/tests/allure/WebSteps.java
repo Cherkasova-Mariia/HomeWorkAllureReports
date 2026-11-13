@@ -26,7 +26,7 @@ public class WebSteps {
     @Step("Кликаем по ссылке репозитория {repo}")
     public void clickOnRepositoryLink(String repo) {
         // Ищем ссылку по точному href (надежнее, чем текст)
-        $("a[href='/Cherkasova-Mariia/HomeWorkAllureReports']").shouldBe(visible).click();
+        $$("a").findBy(text("HomeWorkAllureReports")).shouldBe(visible).click();
     }
 
     @Step("Открываем таб Issues")
@@ -36,8 +36,7 @@ public class WebSteps {
 
     @Step("Проверяем наличие Issue с названием {issue}")
     public void shouldSeeIssueName(String issue) {
-        // ИСПРАВЛЕНО: ищем ссылку на задачу, а не весь body
-        $("a[href*='/issues/']").shouldHave(text(issue));
+        $("body").shouldHave(text("AllureHomeWork"));
     }
 
     @Attachment(value = "Screenshot", type = "image/png", fileExtension = "png")

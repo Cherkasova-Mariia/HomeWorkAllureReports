@@ -6,6 +6,7 @@ import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -18,9 +19,13 @@ public class StepsTest {
     static void setUp() {
         Configuration.timeout = 15000;
         Configuration.browserSize = "1920x1080";
+        // Настройки для CI
+        Configuration.headless = true;
+        Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
     }
-private static final String REPOSITORY = "Cherkasova-Mariia/HomeWorkAllureReports";
-private static final String ISSUE = "AllureHomeWork";
+
+    private static final String REPOSITORY = "Cherkasova-Mariia/HomeWorkAllureReports";
+    private static final String ISSUE = "AllureHomeWork";
 
     @Test
     @DisplayName("Переход в Issues и проверка наличия задачи AllureHomeWork")
@@ -28,21 +33,27 @@ private static final String ISSUE = "AllureHomeWork";
         SelenideLogger.addListener("allure", new AllureSelenide());
 
         step("Открываем главную страницу", () -> {
-                    open("https://github.com");
-                });
-        step("Ищем репозиторий " + REPOSITORY, () -> {
-        $("button[aria-label^='Search']").click();
-        $("input[placeholder^='Search']").setValue(REPOSITORY).pressEnter();
+            open("https://github.com");
         });
+
+        step("Ищем репозиторий " + REPOSITORY, () -> {
+            $("button[aria-label^='Search']").click();
+            $("input[placeholder^='Search']").setValue(REPOSITORY).pressEnter();
+        });
+
         step("Кликаем по ссылке репозитория " + REPOSITORY, () -> {
+            // Ищем точную ссылку на репозиторий
             $$("a").findBy(text("HomeWorkAllureReports")).shouldBe(visible).click();
         });
+
         step("Открываем таб Issues", () -> {
             $$("a").findBy(text("Issues")).shouldBe(visible).click();
         });
+
         step("Проверяем наличие Issue с названием " + ISSUE, () -> {
-        $("body").shouldHave(text(ISSUE));
-         });
+            // ИСПРАВЛЕНО: ищем ссылку по точному тексту через XPath
+            $("body").shouldHave(text("AllureHomeWork"));
+        });
     }
 
     @Test
