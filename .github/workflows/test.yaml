@@ -18,15 +18,16 @@ jobs:
       # 3. Устанавливаем браузер Chrome
       - uses: browser-actions/setup-chrome@v1
 
-      # 4. Устанавливаем системные библиотеки, необходимые для работы Chrome в Linux
+      # 4. Устанавливаем системные библиотеки (libasound2t64 вместо устаревшего libasound2)
       - name: Install Chrome dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgbm1 libxss1 libnss3 libasound2
+          sudo apt-get install -y libgbm1 libxss1 libnss3 libasound2t64
 
       # 5. Даем права на запуск скрипта gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # 6. Запускаем тесты (без флага -Dselenide.remote, чтобы использовался локальный браузер)
-      - run: ./gradlew clean test
+      # 6. Запускаем тесты
+      - name: Run tests
+        run: ./gradlew clean test
