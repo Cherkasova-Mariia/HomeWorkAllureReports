@@ -1,31 +1,19 @@
 package tests.allure;
 
-import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.logevents.SelenideLogger;
+import helpers.Locators;
+import helpers.TestBase;
+import helpers.TestData;
 import io.qameta.allure.selenide.AllureSelenide;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 import static io.qameta.allure.Allure.step;
 
-public class StepsTest {
-
-    @BeforeAll
-    static void setUp() {
-        Configuration.timeout = 15000;
-        Configuration.browserSize = "1920x1080";
-        // Настройки для CI
-        Configuration.headless = true;
-        Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
-    }
-
-    private static final String REPOSITORY = "Cherkasova-Mariia/HomeWorkAllureReports";
-    private static final String ISSUE = "AllureHomeWork";
+public class StepsTest extends TestBase {
 
     @Test
     @DisplayName("Переход в Issues и проверка наличия задачи AllureHomeWork")
@@ -33,38 +21,37 @@ public class StepsTest {
         SelenideLogger.addListener("allure", new AllureSelenide());
 
         step("Открываем главную страницу", () -> {
-            open("https://github.com");
+            open(TestData.BASEURL);
         });
 
-        step("Ищем репозиторий " + REPOSITORY, () -> {
-            $("button[aria-label^='Search']").click();
-            $("input[placeholder^='Search']").setValue(REPOSITORY).pressEnter();
+        step("Ищем репозиторий " + TestData.REPOSITORY, () -> {
+            $(Locators.SEARCH_BUTTON).click();
+            $(Locators.SEARCH_REPOSITORY).setValue(TestData.REPOSITORY).pressEnter();
         });
 
-        step("Кликаем по ссылке репозитория " + REPOSITORY, () -> {
-            // Ищем точную ссылку на репозиторий
-            $$("a").findBy(text("HomeWorkAllureReports")).shouldBe(visible).click();
+        step("Кликаем по ссылке репозитория " + TestData.REPOSITORY, () -> {
+            $$(Locators.ALL_LINKS).findBy(text(TestData.REPOSITORY_NAME)).shouldBe(visible).click();
         });
 
-        step("Открываем таб Issues", () -> {
-            $$("a").findBy(text("Issues")).shouldBe(visible).click();
+        step("Открываем таб " + TestData.ISSUES_TAB, () -> {
+            $$(Locators.ALL_LINKS).findBy(text(TestData.ISSUES_TAB)).shouldBe(visible).click();
         });
 
-        step("Проверяем наличие Issue с названием " + ISSUE, () -> {
-            // ИСПРАВЛЕНО: ищем ссылку по точному тексту через XPath
-            $("body").shouldHave(text("AllureHomeWork"));
+        step("Проверяем наличие Issue с названием " + TestData.ISSUE, () -> {
+            $(Locators.PAGE_BODY).shouldHave(text(TestData.ISSUE));
         });
     }
 
     @Test
     void testAnnotatedStep() {
         SelenideLogger.addListener("allure", new AllureSelenide());
+
         WebSteps steps = new WebSteps();
 
         steps.openMainPage();
-        steps.searchForRepository(REPOSITORY);
-        steps.clickOnRepositoryLink(REPOSITORY);
+        steps.searchForRepository(TestData.REPOSITORY);
+        steps.clickOnRepositoryLink(TestData.REPOSITORY);
         steps.openIssuesTab();
-        steps.shouldSeeIssueName(ISSUE);
+        steps.shouldSeeIssueName(TestData.ISSUE);
     }
 }
